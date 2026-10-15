@@ -3,6 +3,7 @@ package br.pucgoias.ads.filmes;
 import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ public class FilmeService {
         this.repositorio = repositorio;
     }
 
+    @Cacheable(cacheNames = "filmes", key = "#id")
     @Transactional(readOnly = true)
     public FilmeResposta buscar(Long id) {
         log.info(">>> Consultando o PostgreSQL: filme {}", id);
