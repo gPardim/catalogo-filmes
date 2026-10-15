@@ -3,6 +3,7 @@ package br.pucgoias.ads.filmes;
 import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ public class FilmeService {
                 .orElseThrow(() -> new FilmeNaoEncontradoException(id));
     }
 
+    @CacheEvict(cacheNames = "filmes", key = "#id")
     @Transactional
     public FilmeResposta alterarNota(Long id, BigDecimal novaNota) {
         Filme filme = repositorio.findById(id)
@@ -36,6 +38,7 @@ public class FilmeService {
         return FilmeResposta.de(filme);
     }
 
+    @CacheEvict(cacheNames = "filmes", key = "#id")
     @Transactional
     public void remover(Long id) {
         if (!repositorio.existsById(id)) {
