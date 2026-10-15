@@ -2,6 +2,8 @@ services:
   postgres:
     image: postgres:17
     container_name: catalogo-postgres
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: catalogo
       POSTGRES_USER: catalogo
@@ -18,6 +20,8 @@ services:
   redis:
     image: redis:8
     container_name: catalogo-redis
+    ports:
+      - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -27,13 +31,12 @@ services:
   app:
     build: .
     container_name: catalogo-app
-    ports:
-      - "8080:8080"
+    network_mode: host
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/catalogo
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/catalogo
       SPRING_DATASOURCE_USERNAME: catalogo
       SPRING_DATASOURCE_PASSWORD: catalogo
-      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_HOST: localhost
       SPRING_DATA_REDIS_PORT: 6379
     depends_on:
       postgres:
