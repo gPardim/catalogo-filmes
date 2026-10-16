@@ -1,0 +1,19 @@
+QUESTOES PARA VERIFICACAO DA APRENDIZAGEM
+
+1. Por que nao ha instrucao SQL na 2a consulta da Etapa 6?
+O Spring encontrou a chave filmes::1 no Redis e devolveu a copia sem executar o metodo buscar. Por isso nao aparece a mensagem de consulta nem o SQL nos registros.
+
+2. Qual servidor tinha o valor correto na Etapa 7?
+O PostgreSQL, que e a fonte da verdade. O Redis guardava uma copia antiga e nao acompanha as alteracoes feitas no banco.
+
+3. O que aconteceria sem @CacheEvict em alterarNota?
+O PUT gravaria a nota nova no banco, mas a copia antiga continuaria no Redis. A API devolveria a nota velha ate a copia expirar (5 minutos).
+
+4. TTL de 24 horas ou de 1 segundo?
+Com 24 horas, o dado desatualizado pode ser servido por ate um dia (mais acertos, mais risco de valor velho). Com 1 segundo, quase toda consulta e falta e o cache quase nao ajuda.
+
+5. Bons candidatos a cache.
+Descricao de produto e lista de estados mudam pouco e sao muito lidos: bons candidatos. Saldo de conta e estoque no fechamento de compra mudam o tempo todo e exigem o valor exato: nao devem ser cacheados, ou so com invalidacao rigorosa.
+
+6. Por que a copia sobreviveu ao reinicio da aplicacao?
+O cache esta no conteiner do Redis, fora da aplicacao. Com um HashMap dentro de FilmeService, o reinicio apagaria tudo, e varias instancias da aplicacao nao compartilhariam as copias.
